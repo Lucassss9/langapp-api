@@ -26,7 +26,6 @@ public class Student {
     private String name;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private CefrLevel cefrLevel;
 
     @Enumerated(EnumType.STRING)
