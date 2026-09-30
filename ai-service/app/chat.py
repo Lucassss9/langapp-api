@@ -1,8 +1,8 @@
 import requests
 from pydantic import BaseModel
-
-
-conversations = {}
+from sqlalchemy.orm import Session
+from app.database import SessionLocal
+from app.models import Conversation
 
 
 class ChatRequest(BaseModel):
@@ -17,24 +17,42 @@ class ChatResponse(BaseModel):
 
 def chat(request: ChatRequest) -> ChatResponse:
 
-    conversation_id = f"{request.playerId}:{request.npcId}"
+    db: Session = SessionLocal()
 
-    if conversation_id not in conversations:
-        conversations[conversation_id] = []
+    try:
+        history = (
+            db.query(Conversation)
+            .filter(
+                Conversation.player_id == request.playerId,
+                Conversation.npc_id == request.npcId
+            )
+            .order_by(Conversation.id)
+            .all()
+        )
 
-    conversations[conversation_id].append(
-        {
-            "role": "user",
-            "content": request.message
-        }
-    )
+        db.add(
+            Conversation(
+                player_id=request.playerId,
+                npc_id=request.npcId,
+                role="user",
+                message=request.message
+            )
+        )
 
-    history = ""
+        db.commit()
 
-    for message in conversations[conversation_id]:
-        history += f"{message['role']}: {message['content']}\n"
+        conversation_history = ""
 
-    prompt = f"""
+        for message in history:
+            conversation_history += (
+                f"{message.role}: {message.message}\n"
+            )
+
+        conversation_history += (
+            f"user: {request.message}\n"
+        )
+
+        prompt = f"""
 You are an NPC in Minecraft.
 
 NPC: {request.npcId}
@@ -44,33 +62,40 @@ The player is practicing English.
 Speak naturally and keep your response relatively short.
 
 Conversation history:
-{history}
+{conversation_history}
 
 Respond as the NPC.
 """
 
-    ollama_response = requests.post(
-        "http://localhost:11434/api/generate",
-        json={
-            "model": "qwen3:1.7b",
-            "prompt": prompt,
-            "stream": False,
-        },
-    )
+        ollama_response = requests.post(
+            "http://localhost:11434/api/generate",
+            json={
+                "model": "qwen3:1.7b",
+                "prompt": prompt,
+                "stream": False,
+            },
+        )
 
-    ollama_response.raise_for_status()
+        ollama_response.raise_for_status()
 
-    data = ollama_response.json()
+        data = ollama_response.json()
 
-    npc_response = data["response"]
+        npc_response = data["response"]
 
-    conversations[conversation_id].append(
-        {
-            "role": "npc",
-            "content": npc_response
-        }
-    )
+        db.add(
+            Conversation(
+                player_id=request.playerId,
+                npc_id=request.npcId,
+                role="npc",
+                message=npc_response
+            )
+        )
 
-    return ChatResponse(
-        response=npc_response
-    )
+        db.commit()
+
+        return ChatResponse(
+            response=npc_response
+        )
+
+    finally:
+        db.close()
