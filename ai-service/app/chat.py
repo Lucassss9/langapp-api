@@ -2,6 +2,9 @@ import requests
 from pydantic import BaseModel
 
 
+conversations = {}
+
+
 class ChatRequest(BaseModel):
     playerId: str
     npcId: str
@@ -13,6 +16,24 @@ class ChatResponse(BaseModel):
 
 
 def chat(request: ChatRequest) -> ChatResponse:
+
+    conversation_id = f"{request.playerId}:{request.npcId}"
+
+    if conversation_id not in conversations:
+        conversations[conversation_id] = []
+
+    conversations[conversation_id].append(
+        {
+            "role": "user",
+            "content": request.message
+        }
+    )
+
+    history = ""
+
+    for message in conversations[conversation_id]:
+        history += f"{message['role']}: {message['content']}\n"
+
     prompt = f"""
 You are an NPC in Minecraft.
 
@@ -22,8 +43,8 @@ Player: {request.playerId}
 The player is practicing English.
 Speak naturally and keep your response relatively short.
 
-Player says:
-{request.message}
+Conversation history:
+{history}
 
 Respond as the NPC.
 """
@@ -41,6 +62,15 @@ Respond as the NPC.
 
     data = ollama_response.json()
 
+    npc_response = data["response"]
+
+    conversations[conversation_id].append(
+        {
+            "role": "npc",
+            "content": npc_response
+        }
+    )
+
     return ChatResponse(
-        response=data["response"]
+        response=npc_response
     )
