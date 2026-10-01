@@ -4,6 +4,7 @@ import com.dev.langapp.dto.StudentRequest;
 import com.dev.langapp.entity.Student;
 import com.dev.langapp.exception.StudentAlreadyExistsException;
 import com.dev.langapp.exception.StudentNotFoundException;
+import com.dev.langapp.mapper.StudentMapper;
 import com.dev.langapp.repository.StudentRepository;
 
 import org.springframework.stereotype.Service;
@@ -29,18 +30,13 @@ public class StudentService {
 
     @Transactional
     public Student register(UUID minecraftUuid, StudentRequest studentRequest) {
-        Student student = new Student();
         Optional<Student> findByUuid = studentRepository.findByMinecraftUuid(minecraftUuid);
 
         if(findByUuid.isPresent()) {
             throw new StudentAlreadyExistsException(minecraftUuid.toString());
         }
 
-        student.setName(studentRequest.name());
-        student.setMinecraftUuid(minecraftUuid);
-        student.setCefrLevel(studentRequest.cefrLevel());
-        student.setTargetLanguage(studentRequest.targetLanguage());
-        student.setExplanationLanguage(studentRequest.explanationLanguage());
+        Student student = StudentMapper.toStudent(minecraftUuid, studentRequest);
 
         return studentRepository.save(student);
     }
