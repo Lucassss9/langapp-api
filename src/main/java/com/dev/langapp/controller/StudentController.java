@@ -28,6 +28,13 @@ public class StudentController {
         return StudentMapper.toResponse(student);
     }
 
+    @GetMapping("/listartodos")
+    public List<StudentResponse> findAllStudents() {
+        return studentService.listAll().stream()
+                .map(StudentMapper::toResponse)
+                .toList();
+    }
+
     @PostMapping("/register/{minecraftUuid}")
     public StudentResponse registerStudent(@Valid @RequestBody StudentRequest studentRequest, @PathVariable UUID minecraftUuid) {
         Student student = studentService.register(minecraftUuid, studentRequest);
