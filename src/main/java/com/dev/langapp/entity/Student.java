@@ -35,5 +35,4 @@ public class Student {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Language explanationLanguage;
-
 }
