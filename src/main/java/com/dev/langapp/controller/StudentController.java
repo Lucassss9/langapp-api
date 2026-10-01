@@ -8,6 +8,7 @@ import com.dev.langapp.service.StudentService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -32,5 +33,17 @@ public class StudentController {
         Student student = studentService.register(minecraftUuid, studentRequest);
 
         return StudentMapper.toResponse(student);
+    }
+
+    @PutMapping("/update/{minecraftUuid}")
+    public StudentResponse updateStudentByMinecraftUuid(@Valid @RequestBody StudentRequest studentRequest, @PathVariable UUID minecraftUuid) {
+        Student student = studentService.update(minecraftUuid, studentRequest);
+
+        return StudentMapper.toResponse(student);
+    }
+
+    @DeleteMapping("/delete/{minecraftUuid}")
+    public void deleteStudentByMinecraftUuid(@PathVariable UUID minecraftUuid) {
+        studentService.deleteByMinecraftUuid(minecraftUuid);
     }
 }
