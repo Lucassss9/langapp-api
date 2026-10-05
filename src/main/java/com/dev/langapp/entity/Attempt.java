@@ -44,5 +44,5 @@ public class Attempt {
     private boolean countedForProgress;
 
     @OneToMany(mappedBy = "attempt", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Error> errors = new ArrayList<>();
+    private List<Mistake> errors = new ArrayList<>();
 }

@@ -1,6 +1,6 @@
 package com.dev.langapp.entity;
 
-import com.dev.langapp.enums.ErrorType;
+import com.dev.langapp.enums.MistakeType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Error {
+public class Mistake {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +26,7 @@ public class Error {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ErrorType type;
+    private MistakeType type;
 
     @Column(nullable = false, length = 1000)
     private String whatWasSaid;

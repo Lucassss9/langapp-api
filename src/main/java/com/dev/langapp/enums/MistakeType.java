@@ -1,6 +1,6 @@
 package com.dev.langapp.enums;
 
-public enum ErrorType {
+public enum MistakeType {
     IRREGULAR_VERB,
     VERB_TENSE,
     ARTICLE,
