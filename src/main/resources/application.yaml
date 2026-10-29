@@ -2,9 +2,9 @@ spring:
   application:
     name: langapp
   datasource:
-    url: jdbc:postgresql://localhost:5432/langapp
-    username: ${USER_POSTGRE}
-    password: ${PASSWORD_POSTGRE}
+    url: jdbc:postgresql://localhost:5434/${POSTGRES_DB:lang_db}
+    username: ${USER_POSTGRES}
+    password: ${PASSWORD_POSTGRES}
     driver-class-name: org.postgresql.Driver
   jpa:
     show-sql: true
