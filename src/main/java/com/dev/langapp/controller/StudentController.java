@@ -6,6 +6,7 @@ import com.dev.langapp.entity.Student;
 import com.dev.langapp.mapper.StudentMapper;
 import com.dev.langapp.service.StudentService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,6 +37,7 @@ public class StudentController {
     }
 
     @PostMapping("/register/{minecraftUuid}")
+    @ResponseStatus(HttpStatus.CREATED)
     public StudentResponse registerStudent(@Valid @RequestBody StudentRequest studentRequest, @PathVariable UUID minecraftUuid) {
         Student student = studentService.register(minecraftUuid, studentRequest);
 
@@ -50,6 +52,7 @@ public class StudentController {
     }
 
     @DeleteMapping("/delete/{minecraftUuid}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteStudentByMinecraftUuid(@PathVariable UUID minecraftUuid) {
         studentService.deleteByMinecraftUuid(minecraftUuid);
     }
