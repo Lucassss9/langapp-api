@@ -27,4 +27,7 @@ public class Skill {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CefrLevel cefrLevel;
+
+    @Column(columnDefinition = "text")
+    private String teachingContent;
 }
