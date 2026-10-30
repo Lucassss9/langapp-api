@@ -2,12 +2,12 @@ spring:
   application:
     name: langapp
   datasource:
-    url: jdbc:h2:mem:langapp
-    username: sa
+    url: jdbc:postgresql://localhost:5434/${POSTGRES_DB:lang_db}
+    username: ${USER_POSTGRES}
+    password: ${PASSWORD_POSTGRES}
+    driver-class-name: org.postgresql.Driver
   jpa:
     show-sql: true
+    open-in-view: false
     hibernate:
-      ddl-auto: create-drop
-  h2:
-    console:
-      enable: true
+      ddl-auto: update

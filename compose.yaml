@@ -1,0 +1,29 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: langapp
+    restart: unless-stopped
+    volumes:
+      - lang-app:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${USER_POSTGRES}
+      POSTGRES_PASSWORD: ${PASSWORD_POSTGRES}
+    ports:
+      - "5434:5432"
+
+  pgadmin:
+    image: dpage/pgadmin4:9.18
+    container_name: lang_pg
+    restart: unless-stopped
+    volumes:
+      - lang-pg-volume:/var/lib/pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    ports:
+      - "5051:80"
+
+volumes:
+  lang-app:
+  lang-pg-volume:
